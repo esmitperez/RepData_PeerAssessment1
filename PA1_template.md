@@ -1,20 +1,15 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
 library(lubridate)
 if (!file.exists("activity.csv")){
         unzip("activity.zip")
 }
 
 activity <- read.csv(file = "activity.csv", colClasses=c(NA,"Date",NA), stringsAsFactors=T, header = TRUE)
-
 ```
 
 
@@ -26,11 +21,12 @@ activity <- read.csv(file = "activity.csv", colClasses=c(NA,"Date",NA), stringsA
 
 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
-```{r}
 
+```r
 plot.ts(x = activity$interval, y = activity$steps)
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
 
 
 
@@ -38,8 +34,14 @@ plot.ts(x = activity$interval, y = activity$steps)
 
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r}
+
+```r
 summary(activity$steps)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##    0.00    0.00    0.00   37.38   12.00  806.00    2304
 ```
 
 
