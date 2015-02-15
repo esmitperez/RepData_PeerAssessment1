@@ -33,14 +33,20 @@ The difference between a histogram and a barplot was researched, based my graph 
 ```r
 library(ggplot2)
 g <- ggplot(activityPerDay) 
-g <- g + geom_histogram(binwidth=.5, position="identity", aes(x=date, y=stepsPerDay), stat="identity")
-g <- g + labs("Total number of steps taken each day", "Date", "Total steps per day")
+g <- g + geom_histogram(colour = "cadetblue", fill = "white",binwidth=.1, position="identity", aes(x=date, y=stepsPerDay), stat="identity")
+g <- g + ggtitle("Total number of steps taken each day") + xlab("Date") + ylab("Total steps per day")
 g <- g + scale_x_date(breaks = activityPerDay$date)
 g <- g + theme_classic() + theme(axis.text.x = element_text(angle=90, hjust=1))
 
+g <- g +  theme(axis.title.x = element_text(color="forestgreen", vjust=-0.35),
+      axis.title.y = element_text(color="cadetblue" , vjust=0.35) ) 
+
+
+# save it for later
 histogramStepsPerDay <- g
+
 # show
-histogramStepsPerDay
+g
 ```
 
 ![](PA1_template_files/figure-html/histogram_steps_per_day-1.png) 
@@ -50,11 +56,15 @@ histogramStepsPerDay
 
 ```r
 library(plyr)
+
 activityPerDay <- ddply(.data = activity, .(date), summarize, stepsPerDay=sum(steps,na.rm = TRUE), mean= ifelse(is.na(mean(steps, na.rm = T)),0,round(mean(steps, na.rm=T),2)) , median= ifelse(is.na(median(steps, na.rm = T)),0,median(steps, na.rm=T)) )
-kable(activityPerDay, col.names = c("Date", "Total steps per day", "Mean", "Median"))
+
+kable(activityPerDay, col.names = c("Date", "Total steps per day", "Mean", "Median"), caption="Mean and median of the total number of steps taken per day")
 ```
 
 
+
+Table: Mean and median of the total number of steps taken per day
 
 Date          Total steps per day    Mean   Median
 -----------  --------------------  ------  -------
@@ -128,10 +138,17 @@ Date          Total steps per day    Mean   Median
 ```r
 averageByInterval <- ddply(.data = activity, .(interval), summarize, mean=mean(steps, na.rm=T ))
 
+highestInterval <- averageByInterval[averageByInterval$mean==max(averageByInterval$mean),"interval"]
+highestIntervalLabel <- paste0("Interval with max # of steps (",highestInterval,")")
+
 with(averageByInterval,{
-        plot(mean ~ interval, type="l")
-        abline(v=averageByInterval[averageByInterval$mean==max(averageByInterval$mean),"interval"], col="purple")
-        legend(x="topright", cex=0.75, c("Interval with max # of steps"), col=c("purple"), lty=c(1), bty="n")
+        plot(mean ~ interval, type="l", ylab = "Average number of steps", xlab="Interval")
+        abline(v=highestInterval, col="purple", lwd=2)
+        title(main="Average number of steps taken, averaged across all days, per 5 min interval")
+        legend(x="topright", 
+                cex=0.75, c(highestIntervalLabel), 
+                col=c("purple"), lty=c(1), bty="n", lwd = c(2))
+
 })
 ```
 
@@ -183,12 +200,16 @@ colnames(fixed) <- c("date","interval","steps")
 ```r
 library(ggplot2)
 activityPerDayFixed <- ddply(.data = activity, .(date), summarize, stepsPerDay=sum(steps,na.rm = TRUE))
+
 g <- ggplot(activityPerDayFixed) 
-g <- g + geom_histogram(binwidth=.5, position="identity", aes(x=date, y=stepsPerDay), stat="identity")
-g <- g + labs("Total number of steps taken each day", "Date", "Total steps per day")
+g <- g + geom_histogram(colour = "chocolate", fill = "white",binwidth=.1, position="identity", aes(x=date, y=stepsPerDay), stat="identity")
+g <- g + ggtitle("Total number of steps taken each day") + xlab("Date") + ylab("Total steps per day")
 g <- g + scale_x_date(breaks = activityPerDayFixed$date)
 g <- g + theme_classic() + theme(axis.text.x = element_text(angle=90, hjust=1))
-# show
+
+g <- g +  theme(axis.title.x = element_text(color="coral4", vjust=-0.35),
+      axis.title.y = element_text(color="chocolate" , vjust=0.35) ) 
+
 
 histogramStepsPerDayFixed <- g
 
@@ -199,7 +220,7 @@ g
 
 4. a) Do these values differ from the estimates from the first part of the assignment? 
 
-They do not seem to differ.
+Visual inspection of both histograms suggests they *do not differ*.
 
 
 ```r
@@ -210,7 +231,7 @@ print(histogramStepsPerDay, vp = viewport(layout.pos.row = 1, layout.pos.col = 1
 print(histogramStepsPerDayFixed, vp = viewport(layout.pos.row = 2, layout.pos.col = 1))
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
 
 4. b) What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
@@ -224,6 +245,24 @@ Given my initial load/cleanup of data (not taking NAs in account), the first his
 library(stringr)
 
 activity <- transform(activity, typeOfDay=ifelse(str_detect(weekdays(date),"Sunday|Saturday"),"weekend","weekday"))
+
+# show random sample to demonstrate it worked
+set.seed(10)
+activity[sample(nrow(activity),10),]
+```
+
+```
+##       steps       date interval typeOfDay
+## 8916      0 2012-10-31     2255   weekday
+## 5390      0 2012-10-19     1705   weekday
+## 7500      0 2012-10-27       55   weekend
+## 12175     0 2012-11-12      630   weekday
+## 1496      0 2012-10-06      435   weekend
+## 3960     43 2012-10-14     1755   weekend
+## 4822      0 2012-10-17     1745   weekday
+## 4782      0 2012-10-17     1425   weekday
+## 10814   147 2012-11-07     1305   weekday
+## 7545      0 2012-10-27      440   weekend
 ```
 
 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
@@ -235,8 +274,7 @@ library(lattice)
 
 averageByIntervalWeekdays <- ddply(.data = activity, .(interval, date), summarize, mean=mean(steps, na.rm=T ), typeOfDay=typeOfDay)
 
-par(mfrow = c(1,2))
-xyplot(mean ~ interval | typeOfDay, averageByIntervalWeekdays, type="l", xlab = "Interval", ylab="Number of Steps")
+xyplot(mean ~ interval | typeOfDay, averageByIntervalWeekdays, type="l", xlab = "Interval", ylab="Number of Steps", layout = c(1,2))
 ```
 
 ![](PA1_template_files/figure-html/totalstepsperdayByWeekdays-1.png) 
