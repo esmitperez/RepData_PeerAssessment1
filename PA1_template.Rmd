@@ -65,15 +65,14 @@ g
 
 Following is a table displaying the total number of steps taken for each day, along with its mean and median.
 
-*Note*: The HTML table may not show properly when reading the `.md` file in GitHub, please refer to the accompanying `.html` version to see properly.
-
 
 ```{r meanAndMedianOfStepsByDay}
 library(plyr)
 
 activityPerDay <- ddply(.data = activity, .(date), summarize, stepsPerDay=sum(steps,na.rm = TRUE), mean= ifelse(is.na(mean(steps, na.rm = T)),0,round(mean(steps, na.rm=T),2)) , median= ifelse(is.na(median(steps, na.rm = T)),0,median(steps, na.rm=T)) )
 
-kable(activityPerDay, col.names = c("Date", "Total steps per day", "Mean", "Median"), caption="Mean and median of the total number of steps taken per day")
+#kable(activityPerDay, col.names = c("Date", "Total steps per day", "Mean", "Median"), caption="Mean and median of the total number of steps taken per day")
+activityPerDay
 ```
 
 ## What is the average daily activity pattern?
