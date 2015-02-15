@@ -64,15 +64,14 @@ activity &lt;- read.csv(file = &quot;activity.csv&quot;, colClasses=c(NA,&quot;D
 </div>
 <div id="what-is-mean-total-number-of-steps-taken-per-day" class="section level2">
 <h2>What is mean total number of steps taken per day?</h2>
-<div id="total-number-and-mean-of-steps-taken-per-day" class="section level3">
-<h3>Total number and mean of steps taken per day</h3>
+<p>Total number and mean of steps taken per day is calculated by grouping all rows by date, then summarizing the steps count for all intervals in that day. Results are saved in a new dataframe.</p>
+<p><a id="totalstepsperday"></a></p>
 <pre class="r"><code>library(plyr)
 
 activityPerDay &lt;- ddply(.data = activity, .(date), summarize, stepsPerDay=sum(steps,na.rm = TRUE))</code></pre>
-</div>
 <div id="make-a-histogram-of-the-total-number-of-steps-taken-each-day" class="section level3">
 <h3>Make a histogram of the total number of steps taken each day</h3>
-<p>The difference between a histogram and a barplot was researched, based my graph after readying the following pages:</p>
+<p>I researched the difference between a histogram and a barplot, then based my graphs after reading the following pages:</p>
 <ul>
 <li><a href="http://www.shodor.org/interactivate/discussions/HistogramsVsBarGraph/">Histograms vs Bar Graphs</a></li>
 <li><a href="http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/">Plotting distributions (ggplot2)</a></li>
@@ -98,6 +97,8 @@ g</code></pre>
 </div>
 <div id="calculate-and-report-the-mean-and-median-of-the-total-number-of-steps-taken-per-day" class="section level3">
 <h3>Calculate and report the mean and median of the total number of steps taken per day</h3>
+<p>Following is a table displaying the total number of steps taken for each day, along with its mean and median.</p>
+<p><em>Note</em>: The HTML table may not show properly when reading the <code>.md</code> file in GitHub, please refer to the accompanying <code>.html</code> version to see properly.</p>
 <pre class="r"><code>library(plyr)
 
 activityPerDay &lt;- ddply(.data = activity, .(date), summarize, stepsPerDay=sum(steps,na.rm = TRUE), mean= ifelse(is.na(mean(steps, na.rm = T)),0,round(mean(steps, na.rm=T),2)) , median= ifelse(is.na(median(steps, na.rm = T)),0,median(steps, na.rm=T)) )
@@ -522,7 +523,7 @@ with(averageByInterval,{
 <ol start="2" style="list-style-type: decimal">
 <li>Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.</li>
 </ol>
-<p>Given that I calculated the mean values in <code>activityPerDay</code>, I will use those to replace <code>NA</code>, by performing the equivalent of a relational <em>left join</em>, and then projecting the right values into the columns.</p>
+<p>Given that I calculated the mean values in <code>activityPerDay</code> <a href="#totalstepsperday">above</a>, I will use those mean values to replace the original <code>NA</code>s by performing the equivalent of a relational <em>left join</em>, and then projecting the right values, then renaming the resulting columns to match the original ones.</p>
 <ol start="3" style="list-style-type: decimal">
 <li>Create a new dataset that is equal to the original dataset but with the missing data filled in.</li>
 </ol>
